@@ -9,7 +9,10 @@
 #include "MPC.h"
 #include "json.hpp"
 
+#include "gnuplot-iostream.h"
+
 // for convenience
+
 using json = nlohmann::json;
 
 // For converting back and forth between radians and degrees.
@@ -71,7 +74,23 @@ int main() {
   // MPC is initialized here!
   MPC mpc;
 
-  h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  // Gnuplot
+  std::vector<double> cte_vector;
+  std::vector<double> epsi_vector;
+  std::vector<double> steering_vector;
+  std::vector<double> throttle_vector;
+  std::vector<double> v_vector;
+
+  Gnuplot gp;
+  std::cout << "Press Ctrl-C to quit (closing gnuplot window doesn't quit)." << std::endl;
+  int temp_i = 0;
+
+  //  gp << "set multiplot layout 2,1\n";
+  //  gp << "set title 'CTE'";
+  gp << "set terminal qt size 400, 500\n";
+  gp << "set terminal qt position 50,50\n";
+
+  h.onMessage([&mpc,&gp,&cte_vector,&epsi_vector,&steering_vector,&throttle_vector,&v_vector,&temp_i](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -197,6 +216,40 @@ int main() {
           // SUBMITTING.
           this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+
+          //Gnuplot
+          cte_vector.push_back(cte0);
+          epsi_vector.push_back(epsi0);
+          steering_vector.push_back(delta);
+          throttle_vector.push_back(a);
+          v_vector.push_back(v);
+          if (temp_i % 10 == 0){
+            gp << "set multiplot layout 5,1\n";
+
+            gp << "set ylabel 'CTE' offset 1,0\n";
+            gp << "plot '-' binary" << gp.binFmt1d(cte_vector, "array") << "with lines notitle lc 'red'\n";
+            gp.sendBinary1d(cte_vector);
+
+            gp << "set ylabel 'Epsi' offset 1,0\n";
+            gp << "plot '-' binary" << gp.binFmt1d(epsi_vector, "array") << "with lines notitle lc 'red'\n";
+            gp.sendBinary1d(epsi_vector);
+
+            gp << "set ylabel 'Steering' offset 1,0\n";
+            gp << "plot '-' binary" << gp.binFmt1d(steering_vector, "array") << "with lines notitle lc 'blue'\n";
+            gp.sendBinary1d(steering_vector);
+
+            gp << "set ylabel 'Throttle' offset 1,0\n";
+            gp << "plot '-' binary" << gp.binFmt1d(throttle_vector, "array") << "with lines notitle lc 'blue'\n";
+            gp.sendBinary1d(throttle_vector);
+
+            gp << "set ylabel 'Velocity' offset 1,0\n";
+            gp << "plot '-' binary" << gp.binFmt1d(v_vector, "array") << "with lines notitle lc 'blue'\n";
+            gp.sendBinary1d(v_vector);
+
+            gp << "unset multiplot\n";
+          }
+          temp_i ++;
+
         }
       } else {
         // Manual driving
