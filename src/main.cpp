@@ -87,7 +87,7 @@ int main() {
 
   //  gp << "set multiplot layout 2,1\n";
   //  gp << "set title 'CTE'";
-  gp << "set terminal qt size 400, 500\n";
+  gp << "set terminal qt size 400, 400\n";
   gp << "set terminal qt position 50,50\n";
 
   h.onMessage([&mpc,&gp,&cte_vector,&epsi_vector,&steering_vector,&throttle_vector,&v_vector,&temp_i](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
@@ -141,7 +141,8 @@ int main() {
           // Latancy
 
           // Actualtor Latency
-          const double delay = 100/1000.0;
+          const int delay_millisec = 100;
+          const double delay = delay_millisec/1000.0;
 
           // Initial state.
           const double x0 = 0;
@@ -214,7 +215,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(100));
+          this_thread::sleep_for(chrono::milliseconds(delay_millisec));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 
           //Gnuplot
@@ -225,6 +226,7 @@ int main() {
           v_vector.push_back(v);
           if (temp_i % 10 == 0){
             gp << "set multiplot layout 5,1\n";
+            gp << "set lmargin at screen 0.10\n";
 
             gp << "set ylabel 'CTE' offset 1,0\n";
             gp << "plot '-' binary" << gp.binFmt1d(cte_vector, "array") << "with lines notitle lc 'red'\n";

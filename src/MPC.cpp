@@ -56,7 +56,7 @@ class FG_eval {
     for (int t = 0; t < N; t++) {
       fg[0] += 15*CppAD::pow(vars[cte_start + t],2);
       fg[0] += 1.5*CppAD::pow(vars[epsi_start + t],2);
-      fg[0] += 0.002*CppAD::pow(vars[v_start + t] - ref_v,2);
+      fg[0] += 0.001*CppAD::pow(vars[v_start + t] - ref_v,2);
     }
 
     // Minimize the use of actuators
@@ -67,8 +67,8 @@ class FG_eval {
 
     // Minimize the difference between sequential actuatoions
     for (int t = 0; t < N-2; t++) {
-      fg[0] += 7000.*CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t],2);
-      fg[0] += 1.*CppAD::pow(vars[a_start + t + 1] - vars[a_start + t],2);
+      fg[0] += 40000.*CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t],2);
+      fg[0] += 100.*CppAD::pow(vars[a_start + t + 1] - vars[a_start + t],2);
     }
 
     // Setup Constraints
@@ -106,8 +106,8 @@ class FG_eval {
       AD<double> psides0;
 
       // 4th order Polyfit
-        f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * CppAD::pow(x0, 2) + coeffs[3] * CppAD::pow(x0, 3);
-        psides0 = CppAD::atan(coeffs[1] + 2 * coeffs[2] * x0 + 3 * coeffs[3] * CppAD::pow(x0,2));
+      f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * CppAD::pow(x0, 2) + coeffs[3] * CppAD::pow(x0, 3);
+      psides0 = CppAD::atan(coeffs[1] + 2 * coeffs[2] * x0 + 3 * coeffs[3] * CppAD::pow(x0,2));
 
       // Recall the equations for the model:
       // x_[t+1] = x[t] + v[t] * cos(psi[t]) * dt
