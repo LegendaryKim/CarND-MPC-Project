@@ -49,7 +49,7 @@ Self-Driving Car Engineer Nanodegree Program
 ## Project Rubrics
 
 [//]: # (Image References)
-[image1]: ./output/stateequation.pdf "state_equation"
+[image1]: ./output/stateequation.png "state_equation"
 
 1. **Compilation**: Your code should compile.
 
@@ -80,6 +80,8 @@ The global coordinates of waypoints are transfromed to vehicle's coordinates. Th
 
 The latency, a 100 milliseconds, is handled with the state-updating. Therefore, we can update the state with 0.1 secons and then we can apply MPC on the delayed state in [main.cpp](./src/main.cpp).
 
+
+**Here is the simulation result [video](./output/MPC.mov)**
 
   
 
