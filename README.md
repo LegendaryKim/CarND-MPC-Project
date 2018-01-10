@@ -63,6 +63,7 @@ The kinematic model of the vehicle in the simulation is built with two element o
 Also, the state of the model includes ```x``` and ```y```-coordinates, velocity(v), and orientation(```psi```), and cross-track error(```cte```) and orientation error(```epsi```).
 
 State-update equation of the model is given as
+
 ![alt text][image1]
 
 * Timestep Length and Elapsed Duration (N and dt): Student discusses the reasoning behind the chosen N (timestep length) and dt (elapsed duration between timesteps) values. Additionally the student details the previous values tried.
